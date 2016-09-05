@@ -6,6 +6,7 @@ var express = require('express'),
     execFile = require('child_process').execFile,
     spawn = require('child_process').spawn,
     bodyParser = require('body-parser'),
+    keymapping = require('./keymapping.js'),
     fs = require('fs'),
     path = require('path');
 
@@ -41,7 +42,13 @@ app.post('/api/swipe', function (req, res) {
 });
 
 app.post('/api/key', function (req, res) {
-    execFile('adb', [ 'shell', 'input', 'keyevent', req.body.key ],(error, stdou, stderr) => {
+    var key = req.body.key;
+
+    if (req.body.keyCode) key = keymapping.keyCodeToADBKey(parseInt(req.body.keyCode, 10), req.body.shift);
+
+    console.log('send key', key, req.body.keyCode, req.body.shift)
+
+    execFile('adb', [ 'shell', 'input', 'keyevent', key ],(error, stdou, stderr) => {
         res.sendStatus(200);
     });
 });

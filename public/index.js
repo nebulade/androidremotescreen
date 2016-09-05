@@ -18,8 +18,8 @@ function sendTap(x, y) {
     $.post('/api/tap', { x: x*scale, y: y*scale }, function (data) {});
 }
 
-function sendKey(key) {
-    $.post('/api/key', { key: key }, function (data) {});
+function sendKey(key, keyCode, shift) {
+    $.post('/api/key', { key: key, keyCode: keyCode, shift: !!shift }, function (data) {});
 }
 
 function sendSwipe(x1, y1, x2, y2) {
@@ -74,6 +74,15 @@ $(function () {
 
             mousedown = false;
         }
+    });
+
+    $(window).on('keyup', function (event) {
+        console.log(event.shiftKey, event.keyCode);
+
+        // ignore modifiers
+        if (event.keyCode === 16 || event.keyCode === 17 || event.keyCode === 18) return;
+
+        sendKey(null, event.keyCode, event.shiftKey);
     });
 
     getScreen();
